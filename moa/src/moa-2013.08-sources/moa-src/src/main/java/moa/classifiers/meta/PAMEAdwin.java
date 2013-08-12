@@ -7,6 +7,7 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
+import moa.options.FlagOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
 import weka.core.Instance;
@@ -41,7 +42,11 @@ public class PAMEAdwin extends AbstractClassifier{
 	public double[] weights_pame2;
 	public double[] weights_pame3;
 	public double dkl = 0.0;
-
+	public FlagOption overSampleOption = new FlagOption("overSample",
+            'o', "Oversample class 2.");
+	public FlagOption underSampleOption = new FlagOption("underSample",
+            'm', "Undersample class 2.");
+	
 	/*
 	 * set up some constants to make the coding thing a little bit less ambiguous
 	 */

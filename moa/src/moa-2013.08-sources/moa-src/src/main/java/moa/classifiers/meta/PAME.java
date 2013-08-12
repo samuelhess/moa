@@ -8,6 +8,7 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
+import moa.options.FlagOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
 import weka.core.Instance;
@@ -37,8 +38,13 @@ public class PAME extends AbstractClassifier {
                 "Formal Optimization"}, 0);
 	public double[] weights;
 	public double n_negativeWeights;
+	//public double rareCount;
 	private double C = 0.01;
 	private static final long serialVersionUID = 1L;
+	//public FlagOption overSampleOption = new FlagOption("overSample",
+    //        'o', "Oversample class 2.");
+	//public FlagOption underSampleOption = new FlagOption("underSample",
+    //        'm', "Undersample class 2.");
 	
 	@Override
     public String getPurposeString() {
