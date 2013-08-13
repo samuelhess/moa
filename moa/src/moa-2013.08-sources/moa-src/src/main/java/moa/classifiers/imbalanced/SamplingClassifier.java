@@ -3,17 +3,12 @@ package moa.classifiers.imbalanced;
 import weka.core.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
 
 public class SamplingClassifier extends AbstractClassifier {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
