@@ -1,7 +1,5 @@
 package moa.classifiers.meta;
 
-import java.util.Arrays;
-import java.util.Collections;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
@@ -38,13 +36,17 @@ public class PAME extends AbstractClassifier {
                 "Formal Optimization"}, 0);
 	public double[] weights;
 	public double n_negativeWeights;
-	//public double rareCount;
+	public double rareCount;
+	public double count;
 	private double C = 0.01;
 	private static final long serialVersionUID = 1L;
-	//public FlagOption overSampleOption = new FlagOption("overSample",
-    //        'o', "Oversample class 2.");
-	//public FlagOption underSampleOption = new FlagOption("underSample",
-    //        'm', "Undersample class 2.");
+	public FlagOption overSampleOption = new FlagOption("overSample",
+            'o', "Oversample class 0.");
+	public FlagOption underSampleOption = new FlagOption("underSample",
+            'm', "Undersample class 0.");
+	public FlagOption logTransformOption = new FlagOption("logTransform",
+            'z', "Log(1/p)");
+	
 	
 	@Override
     public String getPurposeString() {
@@ -114,6 +116,9 @@ public class PAME extends AbstractClassifier {
 	@Override
 	public void resetLearningImpl() {
 		this.n_negativeWeights = 0;
+		this.rareCount = 0.0;
+		this.count = 0.0;
+		
 		// initialize the experts in the ensemble with null base learners
 		this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
@@ -222,7 +227,11 @@ public class PAME extends AbstractClassifier {
 		// get the prediction vector back
 		double[] ht = this.getPredictions(inst);
 		double yt = inst.classValue();
-
+		if (inst.classIndex() == 0){
+			this.rareCount += 1.0;
+		}
+		this.count += 1.0;
+		
 		// convert to a positive / negative classification scenario
 		if (yt == 0){
 			yt = 1.0;
@@ -248,8 +257,20 @@ public class PAME extends AbstractClassifier {
 		 */
 		for (int i = 0; i < this.ensemble.length; i++) {
 			// sample from a Poisson probability distribution as implemented in 
-			// online bagging and boosting
-            int k = MiscUtils.poisson(1.0, this.classifierRandom);
+			// online bagging and boosting]
+			double w;
+			if (this.overSampleOption.isSet() && inst.classIndex() == 0){
+				w = 1.0 / (this.rareCount/this.count);
+				if (this.logTransformOption.isSet()){
+					w = Math.log(w);
+				}
+			} else if (this.underSampleOption.isSet() && inst.classIndex() != 0){
+				w = 1.0 - this.rareCount/this.count;
+			} else {
+				w = 1.0;
+			}
+			
+            int k = MiscUtils.poisson(w, this.classifierRandom);
             
             // update the expert accordingly 
             if (k > 0) {

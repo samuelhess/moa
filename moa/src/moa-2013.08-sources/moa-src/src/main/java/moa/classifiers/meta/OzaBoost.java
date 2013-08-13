@@ -54,6 +54,14 @@ import moa.options.IntOption;
 public class OzaBoost extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
+    public FlagOption overSampleOption = new FlagOption("overSample",
+            'o', "Oversample class 0.");
+	public FlagOption underSampleOption = new FlagOption("underSample",
+            'm', "Undersample class 0.");
+	public FlagOption logTransformOption = new FlagOption("logTransform",
+            'z', "Log(1/p)");
+	public double rareCount;
+	public double count;
 
     @Override
     public String getPurposeString() {
@@ -77,6 +85,8 @@ public class OzaBoost extends AbstractClassifier {
 
     @Override
     public void resetLearningImpl() {
+    	this.rareCount = 0.0;
+		this.count = 0.0;
         this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
@@ -89,7 +99,13 @@ public class OzaBoost extends AbstractClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
+    	if (inst.classIndex() == 0){
+			this.rareCount += 1.0;
+		}
+		this.count += 1.0;
+		
         double lambda_d = 1.0;
+        
         for (int i = 0; i < this.ensemble.length; i++) {
             double k = this.pureBoostOption.isSet() ? lambda_d : MiscUtils.poisson(lambda_d, this.classifierRandom);
             if (k > 0.0) {

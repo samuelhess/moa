@@ -103,9 +103,19 @@ public class OzaBagASHT extends OzaBag {
     protected double[] error;
 
     protected double alpha = 0.01;
+    public FlagOption overSampleOption = new FlagOption("overSample",
+            'o', "Oversample class 0.");
+	public FlagOption underSampleOption = new FlagOption("underSample",
+            'm', "Undersample class 0.");
+	public FlagOption logTransformOption = new FlagOption("logTransform",
+            'z', "Log(1/p)");
+	public double rareCount;
+	public double count;
 
     @Override
     public void resetLearningImpl() {
+    	this.rareCount = 0.0;
+		this.count = 0.0;
         this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
         this.error = new double[this.ensembleSizeOption.getValue()];
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
@@ -125,9 +135,26 @@ public class OzaBagASHT extends OzaBag {
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
+    	if (inst.classIndex() == 0){
+			this.rareCount += 1.0;
+		}
+		this.count += 1.0;
+		
+		double w;
+		if (this.overSampleOption.isSet() && inst.classIndex() == 0){
+			w = 1.0 / (this.rareCount/this.count);
+			if (this.logTransformOption.isSet()){
+				w = Math.log(w);
+			}
+		} else if (this.underSampleOption.isSet() && inst.classIndex() != 0){
+			w = 1.0 - this.rareCount/this.count;
+		} else {
+			w = 1.0;
+		}
+		
         int trueClass = (int) inst.classValue();
         for (int i = 0; i < this.ensemble.length; i++) {
-            int k = MiscUtils.poisson(1.0, this.classifierRandom);
+            int k = MiscUtils.poisson(w, this.classifierRandom);
             if (k > 0) {
                 Instance weightedInst = (Instance) inst.copy();
                 weightedInst.setWeight(inst.weight() * k);

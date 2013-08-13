@@ -43,10 +43,13 @@ public class PAMEAdwin extends AbstractClassifier{
 	public double[] weights_pame3;
 	public double dkl = 0.0;
 	public FlagOption overSampleOption = new FlagOption("overSample",
-            'o', "Oversample class 2.");
+            'o', "Oversample class 0.");
 	public FlagOption underSampleOption = new FlagOption("underSample",
-            'm', "Undersample class 2.");
-	
+            'm', "Undersample class 0.");
+	public FlagOption logTransformOption = new FlagOption("logTransform",
+            'z', "Log(1/p)");
+	public double rareCount;
+	public double count;
 	/*
 	 * set up some constants to make the coding thing a little bit less ambiguous
 	 */
@@ -127,6 +130,9 @@ public class PAMEAdwin extends AbstractClassifier{
 	@Override
 	public void resetLearningImpl() {
 		this.n_negativeWeights = 0;
+		this.rareCount = 0.0;
+		this.count = 0.0;
+
 		// initialize the experts in the ensemble with null base learners
 		this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
@@ -335,7 +341,11 @@ public class PAMEAdwin extends AbstractClassifier{
 		// get the prediction vector back
 		double[] ht = this.getPredictions(inst);
 		double yt = inst.classValue();
-
+		if (inst.classIndex() == 0){
+			this.rareCount += 1.0;
+		}
+		this.count += 1.0;
+		
 		// convert to a positive / negative classification scenario
 		if (yt == 0){
 			//System.out.println("Y is positive" + yt);
@@ -368,7 +378,19 @@ public class PAMEAdwin extends AbstractClassifier{
 		for (int i = 0; i < this.ensemble.length; i++) {
 			// sample from a Poisson probability distribution as implemented in 
 			// online bagging and boosting
-            int k = MiscUtils.poisson(1.0, this.classifierRandom);
+			double w;
+			if (this.overSampleOption.isSet() && inst.classIndex() == 0){
+				w = 1.0 / (this.rareCount/this.count);
+				if (this.logTransformOption.isSet()){
+					w = Math.log(w);
+				}
+			} else if (this.underSampleOption.isSet() && inst.classIndex() != 0){
+				w = 1.0 - this.rareCount/this.count;
+			} else {
+				w = 1.0;
+			}
+			
+            int k = MiscUtils.poisson(w, this.classifierRandom);
             
             // update the expert accordingly 
             if (k > 0) {

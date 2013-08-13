@@ -27,6 +27,7 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
+import moa.options.FlagOption;
 import moa.options.IntOption;
 
 /**
@@ -63,11 +64,21 @@ public class OzaBag extends AbstractClassifier {
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models in the bag.", 10, 1, Integer.MAX_VALUE);
-
+    public double rareCount;
+	public double count;
+	
     protected Classifier[] ensemble;
-
+    public FlagOption overSampleOption = new FlagOption("overSample",
+            'o', "Oversample class 0.");
+	public FlagOption underSampleOption = new FlagOption("underSample",
+            'm', "Undersample class 0.");
+	public FlagOption logTransformOption = new FlagOption("logTransform",
+            'z', "Log(1/p)");
+	
     @Override
     public void resetLearningImpl() {
+    	this.rareCount = 0.0;
+		this.count = 0.0;
         this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
@@ -78,8 +89,25 @@ public class OzaBag extends AbstractClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
+    	if (inst.classIndex() == 0){
+			this.rareCount += 1.0;
+		}
+		this.count += 1.0;
+		
+		double w;
+		if (this.overSampleOption.isSet() && inst.classIndex() == 0){
+			w = 1.0 / (this.rareCount/this.count);
+			if (this.logTransformOption.isSet()){
+				w = Math.log(w);
+			}
+		} else if (this.underSampleOption.isSet() && inst.classIndex() != 0){
+			w = 1.0 - this.rareCount/this.count;
+		} else {
+			w = 1.0;
+		}
+		
         for (int i = 0; i < this.ensemble.length; i++) {
-            int k = MiscUtils.poisson(1.0, this.classifierRandom);
+            int k = MiscUtils.poisson(w, this.classifierRandom);
             if (k > 0) {
                 Instance weightedInst = (Instance) inst.copy();
                 weightedInst.setWeight(inst.weight() * k);
