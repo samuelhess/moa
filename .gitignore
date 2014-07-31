@@ -1,5 +1,12 @@
-.DS_Store
+*.DS_Store
 .class
 .project
 results/
 data/
+moa/.classpath
+moa/.metadata/
+moa/bin/moa/
+moa/bin/weka/
+moa/src/moa-2013.08-sources/moa-src/.classpath
+moa/src/moa-2013.08-sources/moa-src/.gitignore
+

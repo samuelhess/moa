@@ -31,7 +31,6 @@ import moa.options.MultiChoiceOption;
 import weka.core.Instance;
 
 
-
 public class PAME extends AbstractClassifier {
 
 	/**
