@@ -14,7 +14,7 @@
  *    
  */
 
-package moa.clusterers.utils.mtree;
+package moa.clusterers.outliers.utils.mtree;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -539,8 +539,9 @@ public class MTree<DATA> {
 
 		private final void checkMaxCapacity() throws SplitNodeReplacement {
 			if(children.size() > MTree.this.maxNodeCapacity) {
+				/* auto fixed an error ... wnt withi what eclipse saif to do. */ 
 				DistanceFunction<? super DATA> cachedDistanceFunction = DistanceFunctions.cached(MTree.this.distanceFunction);
-				SplitResult<DATA> splitResult = MTree.this.splitFunction.process(children.keySet(), cachedDistanceFunction);
+				moa.clusterers.outliers.utils.mtree.SplitFunction.SplitResult<DATA> splitResult = MTree.this.splitFunction.process(children.keySet(), cachedDistanceFunction);
 				
 				Node newNode0 = null;
 				Node newNode1 = null;
