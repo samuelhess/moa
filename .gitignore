@@ -2,7 +2,6 @@
 .class
 .project
 results/
-data/
 moa/.classpath
 moa/.metadata/
 moa/bin/moa/

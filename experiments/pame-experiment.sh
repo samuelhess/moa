@@ -4,8 +4,8 @@
 #rm outputs/*.csv
 
 ## set up some path locations
-home_fp=/Users/gditzler
-data_fp=${home_fp}/Dropbox/Public/Research/Papers/WIP/PAME-2014/src/data
+home_fp=/home/ditzler
+data_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/data
 moa_fp=${home_fp}/Git/MassiveOnlineAnalysis/runtime
 lib_fp=${home_fp}/Git/MassiveOnlineAnalysis/moa/lib
 out_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/outputs
