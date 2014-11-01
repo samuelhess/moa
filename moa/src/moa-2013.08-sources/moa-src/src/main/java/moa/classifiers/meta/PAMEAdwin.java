@@ -1,6 +1,6 @@
 /*
  *    PAMEAdwin.java
- *    Copyright (C) 2013, Drexel University 
+ *    Copyright (C) 2014, Drexel University 
  *    @author Gregory Ditzler (gregory.ditzler@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -41,34 +41,53 @@ public class PAMEAdwin extends AbstractClassifier{
 	 *   :updateMethodOption - what kind of weight updates are we using (see paper)
 	 *   :weights - vector of weights for the experts
 	 */
+	/*classifier ensemble*/
 	protected Classifier[] ensemble;
+	
+	/*option for setting the size of the ensemble*/
 	public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of expert in the ensemble.", 10, 1, Integer.MAX_VALUE);
+	/*option for choosing the base classifier*/
 	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+	/*option for setting the PAME version*/
 	public MultiChoiceOption updateMethodOption = new MultiChoiceOption(
             "updateMethod", 'u', "The update method used.", new String[]{
                 "PAME-I", "PAME-II", "PAME-III","PAME-II/III"}, new String[]{
                 "Update +/- Weight",
                 "Update + Weight clipping",
                 "Formal Optimization",
-                "Compare II/III: KL-div only - do not trust acc."}, 0);
-	public double[] weights;
-	public double n_negativeWeights;
-	private static final long serialVersionUID = 1L;
-	private double C = .01; // was 0.01
-	protected ADWIN[] ADError;
-	public double[] weights_pame2;
-	public double[] weights_pame3;
-	public double dkl = 0.0;
+                "Compare II/III: KL-div only - do not trust accuarcy"}, 0);
+	/*option to oversample the stream*/
 	public FlagOption overSampleOption = new FlagOption("overSample",
             'o', "Oversample class 0.");
+	/*option to undersample the stream*/
 	public FlagOption underSampleOption = new FlagOption("underSample",
             'm', "Undersample class 0.");
+	/*option for imbalance data over/undersampling*/
 	public FlagOption logTransformOption = new FlagOption("logTransform",
             'z', "Log(1/p)");
+	
+	/*classifier voting weights for each ensemble member*/
+	public double[] weights;
+	/*number of nonnegative classifier weights*/
+	public double n_negativeWeights;
+	/*cares... id*/
+	private static final long serialVersionUID = 1L;
+	/*regularization parameter*/
+	private double C = .01; // was 0.01
+	/*adwin for drift detection*/
+	protected ADWIN[] ADError;
+	/*weights for pame 2&3 if pame23 is set*/
+	public double[] weights_pame2;
+	public double[] weights_pame3;
+	/*kl-divergence*/
+	public double dkl = 0.0;
+	/*number of rare instances processed*/
 	public double rareCount;
+	/*number of instances processed*/
 	public double count;
+	
 	/*
 	 * set up some constants to make the coding thing a little bit less ambiguous
 	 */
@@ -168,8 +187,6 @@ public class PAMEAdwin extends AbstractClassifier{
         		this.updateMethodOption.getChosenIndex() == PAME3){
         	for (int i = 0; i < this.ensemble.length; i++){
         		this.weights[i] = 1.0/this.ensemble.length;
-        		//this.weights_pame2[i] = 1.0/this.ensemble.length;
-        		//this.weights_pame3[i] = 1.0/this.ensemble.length;
         	}
         }else{ // this implements PAME1
         	for (int i = 0; i < this.ensemble.length; i++){
@@ -195,6 +212,9 @@ public class PAMEAdwin extends AbstractClassifier{
         }
 	}
 
+	/*
+	 * weight updates for pame-1 (regularized)
+	 */
 	private void pame1_weights(double[] ht, double yt){
 		double alpha = (1.0 - yt*this.dot(ht, this.weights)) / this.dot(ht, ht);
 		if (alpha < 0)
@@ -205,6 +225,9 @@ public class PAMEAdwin extends AbstractClassifier{
 		this.weights = this.addvectors(this.weights, this.scalarvector(alpha*yt, ht));
 	}
 
+	/*
+	 * weight updates for pame-2
+	 */
 	private void pame2_weights(double[] ht, double yt){
 		pame1_weights(ht, yt);
 		//double zz = 0.0;
@@ -216,6 +239,9 @@ public class PAMEAdwin extends AbstractClassifier{
 		//System.out.printf("   sums: %f \n", zz);
 	}
 
+	/*
+	 * weight updates for pame-3
+	 */
 	private void pame3_weights(double[] ht, double yt){
 		double K = (double) this.weights.length;
 
@@ -226,7 +252,9 @@ public class PAMEAdwin extends AbstractClassifier{
 		}
 
 		/* see proof for this value */
+		// h*1
 		double hh = this.dot(ht, onesVec);
+		// -hh/K *1
 		double[] normVec = this.addvectors(ht, this.scalarvector(-1.0*hh/K, onesVec));
 		double denom = this.dot(normVec, normVec);
 		double alpha = (1.0 - yt*this.dot(ht, this.weights)) / denom;
@@ -267,6 +295,7 @@ public class PAMEAdwin extends AbstractClassifier{
 				this.weights[k] -= tmax;
 			}
 		}
+		// this.weights is now convex
 	}
 
 
@@ -345,7 +374,9 @@ public class PAMEAdwin extends AbstractClassifier{
 			this.weights_pame2[i] /= zz;   
 		}
 
-		this.dkl = (this.klDivergence(this.weights_pame2, this.weights_pame3) + this.klDivergence(this.weights_pame3, this.weights_pame2))/2.0;
+		/*kl-measurement will be symetric now*/
+		this.dkl = (this.klDivergence(this.weights_pame2, this.weights_pame3) 
+				+ this.klDivergence(this.weights_pame3, this.weights_pame2))/2.0;
 	}
 
 

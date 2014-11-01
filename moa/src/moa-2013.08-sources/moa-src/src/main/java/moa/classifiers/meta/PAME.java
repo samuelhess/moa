@@ -1,6 +1,6 @@
 /*
  *    PAME.java
- *    Copyright (C) 2013, Drexel University 
+ *    Copyright (C) 2014, Drexel University 
  *    @author Gregory Ditzler (gregory.ditzler@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -41,29 +41,44 @@ public class PAME extends AbstractClassifier {
 	 *   :updateMethodOption - what kind of weight updates are we using (see paper)
 	 *   :weights - vector of weights for the experts
 	 */
+	/*classifier ensemble*/
 	protected Classifier[] ensemble;
+	
+	/*option for setting the size of the ensemble*/
 	public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of expert in the ensemble.", 10, 1, Integer.MAX_VALUE);
+	/*option for choosing the base classifier*/
 	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+	/*option for setting the PAME version*/
 	public MultiChoiceOption updateMethodOption = new MultiChoiceOption(
             "updateMethod", 'u', "The update method used.", new String[]{
                 "PAME-I", "PAME-II", "PAME-III"}, new String[]{
                 "Update +/- Weight",
                 "Update + Weight clipping",
                 "Formal Optimization"}, 0);
-	public double[] weights;
-	public double n_negativeWeights;
-	public double rareCount;
-	public double count;
-	private double C = 0.01;
-	private static final long serialVersionUID = 1L;
+	/*option to oversample the stream*/
 	public FlagOption overSampleOption = new FlagOption("overSample",
             'o', "Oversample class 0.");
+	/*option to undersample the stream*/
 	public FlagOption underSampleOption = new FlagOption("underSample",
             'm', "Undersample class 0.");
+	/*option for imbalance data over/undersampling*/
 	public FlagOption logTransformOption = new FlagOption("logTransform",
             'z', "Log(1/p)");
+	
+	/*classifier voting weights for each ensemble member*/
+	public double[] weights;
+	/*number of nonnegative classifier weights*/
+	public double n_negativeWeights;
+	/*cares... id*/
+	private static final long serialVersionUID = 1L;
+	/*regularization parameter*/
+	private double C = .01; // was 0.01
+	/*number of rare instances processed*/
+	public double rareCount;
+	/*number of instances processed*/
+	public double count;
 	
 	
 	@Override
