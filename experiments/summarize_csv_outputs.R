@@ -1,6 +1,6 @@
 data_sets <- c("abalone_v2","airlines","breast-w","car_v2","cmc","cmc_v2",
                "colic","cov_v2","credit-a","diabetes","dow","elecNormNew",
-               "german","hepatitis","hyper","image","magic",
+               "german","haberman","hepatitis","hyper","image","magic",
                "noaa","poker","sea","sick","spam","splice_v2")
 #data_sets <- c("haberman") #"haberman", "poker"
 base_clfr <- "bayes"
@@ -44,5 +44,31 @@ for (data_set in data_sets) {
                        pame1adwin=p1a_df$classifications.correct..percent.,
                        pame2adwin=p2a_df$classifications.correct..percent.,
                        pame3adwin=p3a_df$classifications.correct..percent.)
-  write.csv(acc_df, file=paste("../outputs/clean-",data_set, "-", base_clfr, ".csv", sep=""), row.names=F)
+  write.csv(acc_df, file=paste("../outputs/clean-accuracy-",data_set, "-", base_clfr, ".csv", sep=""), row.names=F)
+  
+  kappa_df <- data.frame(time=base_df$learning.evaluation.instances, 
+                       bagging=bag_df$Kappa.Statistic..percent.,
+                       boosting=boo_df$Kappa.Statistic..percent.,
+                       bagging_adwin=baga_df$Kappa.Statistic..percent.,
+                       boosting_adwin=booa_df$Kappa.Statistic..percent.,
+                       pame1=p1_df$Kappa.Statistic..percent.,
+                       pame2=p2_df$Kappa.Statistic..percent.,
+                       pame3=p3_df$Kappa.Statistic..percent.,
+                       pame1adwin=p1a_df$Kappa.Statistic..percent.,
+                       pame2adwin=p2a_df$Kappa.Statistic..percent.,
+                       pame3adwin=p3a_df$Kappa.Statistic..percent.)
+  write.csv(kappa_df, file=paste("../outputs/clean-kappa-",data_set, "-", base_clfr, ".csv", sep=""), row.names=F)
+  
+  kappa_df <- data.frame(time=base_df$learning.evaluation.instances, 
+                         bagging=bag_df$model.cost..RAM.Hours.,
+                         boosting=boo_df$model.cost..RAM.Hours.,
+                         bagging_adwin=baga_df$model.cost..RAM.Hours.,
+                         boosting_adwin=booa_df$model.cost..RAM.Hours.,
+                         pame1=p1_df$model.cost..RAM.Hours.,
+                         pame2=p2_df$model.cost..RAM.Hours.,
+                         pame3=p3_df$model.cost..RAM.Hours.,
+                         pame1adwin=p1a_df$model.cost..RAM.Hours.,
+                         pame2adwin=p2a_df$model.cost..RAM.Hours.,
+                         pame3adwin=p3a_df$model.cost..RAM.Hours.)
+  write.csv(kappa_df, file=paste("../outputs/clean-rmhrs-",data_set, "-", base_clfr, ".csv", sep=""), row.names=F)
 }
