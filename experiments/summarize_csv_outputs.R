@@ -1,25 +1,36 @@
 data_sets <- c("abalone_v2","airlines","breast-w","car_v2","cmc","cmc_v2",
                "colic","cov_v2","credit-a","diabetes","dow","elecNormNew",
-               "german","haberman","hepatitis","hyper","image","magic",
+               "german","hepatitis","hyper","image","magic",
                "noaa","poker","sea","sick","spam","splice_v2")
-data_sets <- c("abalone_v2")
+#data_sets <- c("haberman") #"haberman", "poker"
 base_clfr <- "bayes"
 
 for (data_set in data_sets) {
   # load the files that moa outputs for each experiment. to make life a bit easier, 
   # we are going to save new csv files that can easily loaded for plotting
-  base_df <- read.csv(paste("../outputs/results-", data_set, "-", base_clfr, ".csv", sep=""))
-  bag_df <- read.csv(paste("../outputs/results-", data_set, "-bagging-", base_clfr, ".csv", sep=""))
-  baga_df <- read.csv(paste("../outputs/results-", data_set, "-baggingAdwin-", base_clfr, ".csv", sep=""))
-  boo_df <- read.csv(paste("../outputs/results-", data_set, "-boosting-", base_clfr, ".csv", sep=""))
-  booa_df <- read.csv(paste("../outputs/results-", data_set, "-boostingAdwin-", base_clfr, ".csv", sep=""))
+  base_df <- read.table(paste("../outputs/results-", data_set, "-", base_clfr, ".csv", sep=""), 
+                        header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  bag_df <- read.table(paste("../outputs/results-", data_set, "-bagging-", base_clfr, ".csv", sep=""), 
+                       header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  baga_df <- read.table(paste("../outputs/results-", data_set, "-baggingAdwin-", base_clfr, ".csv", sep=""), 
+                        header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  boo_df <- read.table(paste("../outputs/results-", data_set, "-boosting-", base_clfr, ".csv", sep=""), 
+                       header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  booa_df <- read.table(paste("../outputs/results-", data_set, "-boostingAdwin-", base_clfr, ".csv", sep=""), 
+                        header=TRUE, sep=",", colClasses="numeric", na.strings="?")
   
-  p1_df <- read.csv(paste("../outputs/results-", data_set, "-pame1-", base_clfr, ".csv", sep=""))
-  p1a_df <- read.csv(paste("../outputs/results-", data_set, "-pame1adwin-", base_clfr, ".csv", sep=""))
-  p2_df <- read.csv(paste("../outputs/results-", data_set, "-pame2-", base_clfr, ".csv", sep=""))
-  p2a_df <- read.csv(paste("../outputs/results-", data_set, "-pame2adwin-", base_clfr, ".csv", sep=""))
-  p3_df <- read.csv(paste("../outputs/results-", data_set, "-pame3-", base_clfr, ".csv", sep=""))
-  p3a_df <- read.csv(paste("../outputs/results-", data_set, "-pame3adwin-", base_clfr, ".csv", sep=""))
+  p1_df <- read.table(paste("../outputs/results-", data_set, "-pame1-", base_clfr, ".csv", sep=""), 
+                      header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  p1a_df <- read.table(paste("../outputs/results-", data_set, "-pame1adwin-", base_clfr, ".csv", sep=""),
+                       header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  p2_df <- read.table(paste("../outputs/results-", data_set, "-pame2-", base_clfr, ".csv", sep=""), 
+                      header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  p2a_df <- read.table(paste("../outputs/results-", data_set, "-pame2adwin-", base_clfr, ".csv", sep=""), 
+                       header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  p3_df <- read.table(paste("../outputs/results-", data_set, "-pame3-", base_clfr, ".csv", sep=""), 
+                      header=TRUE, sep=",", colClasses="numeric", na.strings="?")
+  p3a_df <- read.table(paste("../outputs/results-", data_set, "-pame3adwin-", base_clfr, ".csv", sep=""), 
+                       header=TRUE, sep=",", colClasses="numeric", na.strings="?")
   
   # save the accuracies in a data frame
   acc_df <- data.frame(time=base_df$learning.evaluation.instances, 
