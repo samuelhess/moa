@@ -3,7 +3,7 @@ data_sets <- c("abalone_v2","airlines","breast-w","car_v2","cmc","cmc_v2",
                "german","haberman","hepatitis","hyper","image","magic",
                "noaa","poker","sea","sick","spam","splice_v2")
 #data_sets <- c("haberman") #"haberman", "poker"
-base_clfr <- "bayes"
+base_clfr <- "hoeff"
 
 for (data_set in data_sets) {
   # load the files that moa outputs for each experiment. to make life a bit easier, 
@@ -72,3 +72,16 @@ for (data_set in data_sets) {
                          pame3adwin=p3a_df$model.cost..RAM.Hours.)
   write.csv(kappa_df, file=paste("../outputs/clean-rmhrs-",data_set, "-", base_clfr, ".csv", sep=""), row.names=F)
 }
+
+acc_df4 <- melt(acc_df, id.vars="time", value.name="accuracy", id.vars=c("bagging","boosting","pame1"))
+ggplot(data=acc_df3, aes(x=time, y=value, color=variable)) 
+  + geom_line() 
+  + theme(legend.justification=c(1,0), 
+          legend.position=c(1,0),
+          axis.text.x = element_text(size = rel(2)), 
+          axis.text.y = element_text(size = rel(2)), 
+          axis.title.x = element_text(size = rel(2)), 
+          axis.title.y = element_text(size = rel(2)), 
+          legend.text=element_text(size=rel(2)), 
+          legend.title=element_text(size=rel(0))) 
+  + ylim(60,101)

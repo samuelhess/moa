@@ -9,6 +9,6 @@ moa/bin/weka/
 moa/src/moa-2013.08-sources/moa-src/.classpath
 moa/src/moa-2013.08-sources/moa-src/.gitignore
 moa/src/moa-2013.08-sources/moa-src/.DS_Store/
-
+experiments/plots/
 
 .Rproj.user
