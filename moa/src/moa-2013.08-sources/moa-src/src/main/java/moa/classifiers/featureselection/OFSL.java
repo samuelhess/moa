@@ -219,7 +219,7 @@ public class OFSL extends AbstractClassifier {
 	 * @return
 	 */
 	public double[] truncate(double[] x, int B) {
-		int[] sorted_indices = bubblesort_index(x);
+		int[] sorted_indices = bubblesort_index(abs_vector(x));
 		for (int i = 0; i < x.length - B - 1; i++)
 			x[sorted_indices[i]] = 0.0;
 		return x;
@@ -257,6 +257,19 @@ public class OFSL extends AbstractClassifier {
 			}
 		}	
 		return y;
+	}
+	
+	/**
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public double[] abs_vector(double[] x) {
+		for (int i = 0; i < x.length; i++) {
+			if (x[i] < 0)
+				x[i] = -x[i];
+		}
+		return x;
 	}
 	
 	
