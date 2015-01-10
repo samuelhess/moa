@@ -58,6 +58,10 @@ public class OFSL extends AbstractClassifier {
 	
 	@Override
 	public double[] getVotesForInstance(Instance inst) {
+		
+		if (this.weights == null)
+			return (inst.classAttribute().isNominal()) ? new double[2] : new double[1];
+		
 		double[] result = (inst.classAttribute().isNominal()) ? new double[2] : new double[1];
 		double f_t = dot(inst.toDoubleArray(), this.weights);
 		f_t += this.bias;
@@ -85,7 +89,8 @@ public class OFSL extends AbstractClassifier {
 	
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
-		double y_t;
+		double y_t, m_bias_p1, m_bias_p2, m_bias;
+		double[] m_weights_p1, m_weights_p2, m_weights;
 		
 		if (this.weights == null) {
 			this.weights = new double[inst.numValues()];
@@ -103,12 +108,12 @@ public class OFSL extends AbstractClassifier {
 		f_t += this.bias;
 		
 		if (y_t*f_t < 0){
-			double[] m_weights_p1 = scalar_vector(1.0 - this.stepSizeOption.getValue()*this.learningRateOption.getValue(), this.weights);
-			double m_bias_p1 = (1.0 - this.stepSizeOption.getValue()*this.learningRateOption.getValue())*this.bias;
-			double[] m_weights_p2 = scalar_vector(this.learningRateOption.getValue()*y_t, inst.toDoubleArray());
-			double m_bias_p2 = this.learningRateOption.getValue()*y_t;
-			double[] m_weights = vector_add(m_weights_p1, m_weights_p2);
-			double m_bias = m_bias_p1 + m_bias_p2;
+			m_weights_p1 = scalar_vector(1.0 - this.stepSizeOption.getValue()*this.learningRateOption.getValue(), this.weights);
+			m_bias_p1 = (1.0 - this.stepSizeOption.getValue()*this.learningRateOption.getValue())*this.bias;
+			m_weights_p2 = scalar_vector(this.learningRateOption.getValue()*y_t, inst.toDoubleArray());
+			m_bias_p2 = this.learningRateOption.getValue()*y_t;
+			m_weights = vector_add(m_weights_p1, m_weights_p2);
+			m_bias = m_bias_p1 + m_bias_p2;
 			
 			m_weights = l2_projection(m_weights, m_bias, this.learningRateOption.getValue());
 			m_weights = truncate(m_weights, this.numSelectOption.getValue());
