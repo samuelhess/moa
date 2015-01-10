@@ -141,13 +141,13 @@ public class EvaluateModelRegression extends RegressionMainTask {
                         / (double) (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(new LearningEvaluation(
-                            evaluator, model));
+                            null, evaluator, model));
                 }
             }
         }
         if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }
-        return new LearningEvaluation(evaluator, model);
+        return new LearningEvaluation(null, evaluator, model);
     }
 }

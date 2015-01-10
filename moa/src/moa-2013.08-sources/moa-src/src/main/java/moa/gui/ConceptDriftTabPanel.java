@@ -20,7 +20,7 @@
 package moa.gui;
 
 import java.awt.BorderLayout;
-import moa.gui.PreviewPanel.TypePanel;
+//import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
 
 /**
@@ -39,7 +39,7 @@ public class ConceptDriftTabPanel extends AbstractTabPanel {
 
 	public ConceptDriftTabPanel() {
 		this.taskManagerPanel = new CDTaskManagerPanel();
-		this.previewPanel = new PreviewPanel(TypePanel.CONCEPT_DRIFT, this.taskManagerPanel);
+		//this.previewPanel = new PreviewPanel(TypePanel.CONCEPT_DRIFT, this.taskManagerPanel);
 		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
 		setLayout(new BorderLayout());
 		add(this.taskManagerPanel, BorderLayout.NORTH);

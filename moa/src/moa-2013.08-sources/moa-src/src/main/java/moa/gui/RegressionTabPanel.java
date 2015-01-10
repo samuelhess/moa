@@ -20,7 +20,7 @@
 package moa.gui;
 
 import java.awt.BorderLayout;
-import moa.gui.PreviewPanel.TypePanel;
+//import moa.gui.PreviewPanel.TypePanel;
 
 /**
  * This panel allows the user to select and configure a task, and run it.
@@ -38,7 +38,7 @@ public class RegressionTabPanel extends AbstractTabPanel {
 
 	public RegressionTabPanel() {
 		this.taskManagerPanel = new RegressionTaskManagerPanel();
-		this.previewPanel = new PreviewPanel(TypePanel.REGRESSION);
+		//this.previewPanel = new PreviewPanel(TypePanel.REGRESSION);
 		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
 		setLayout(new BorderLayout());
 		add(this.taskManagerPanel, BorderLayout.NORTH);
