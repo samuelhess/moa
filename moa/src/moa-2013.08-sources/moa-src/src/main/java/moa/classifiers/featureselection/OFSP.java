@@ -56,6 +56,7 @@ public class OFSP extends AbstractClassifier {
 	protected double[] weights;
 	/** bias parameters */
 	protected double bias;
+	/** class for generating random numbers */
 	protected Random rand;
 	
 	
@@ -69,10 +70,18 @@ public class OFSP extends AbstractClassifier {
 	public double[] getVotesForInstance(Instance inst) {
 		if (this.weights == null)
 			return (inst.classAttribute().isNominal()) ? new double[2] : new double[1];
-		
+			
 		double[] result = (inst.classAttribute().isNominal()) ? new double[2] : new double[1];
-		double f_t = dot(inst.toDoubleArray(), this.weights);
-		f_t += this.bias;
+		double f_t = 0;
+		int[] indices = new int[this.numSelectOption.getValue()];
+		
+		if (this.evalOption.getChosenIndex() == 0) {
+			f_t = dot(inst.toDoubleArray(), this.weights);
+			f_t += this.bias;
+		} else { 
+			for (int i = 0; i < this.numSelectOption.getValue(); i++)
+				indices[i] = this.rand.nextInt(inst.numAttributes());
+		}
 		
 		if (inst.classAttribute().isNumeric()) {
             result[0] = f_t;
@@ -258,11 +267,12 @@ public class OFSP extends AbstractClassifier {
 	
 	
 	
-	/** Sort the elements of a vector 
+	/** 
+	 * Sort the elements of a vector 
 	 * @param x vector to be sorted 
 	 * @return sorted vector
 	 */
-	private int[] bubblesort_index(double[] x){
+	public int[] bubblesort_index(double[] x){
 		int[] y = new int[x.length];
 		boolean flag = true;
 		double t, r;
@@ -291,7 +301,7 @@ public class OFSP extends AbstractClassifier {
 	}
 	
 	/**
-	 * 
+	 * Compute the absolute value of the elements in a vector
 	 * @param x
 	 * @return
 	 */
