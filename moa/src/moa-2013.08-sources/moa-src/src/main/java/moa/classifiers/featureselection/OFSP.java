@@ -128,8 +128,10 @@ public class OFSP extends AbstractClassifier {
 		double[] x_hat = inst.toDoubleArray();
 		
 		if (this.rand.nextDouble() < this.searchOption.getValue()) {
+			int[] indices_perm = perm(inst.numAttributes());
 			for (int i = 0; i < this.numSelectOption.getValue(); i++)
-				indices[i] = this.rand.nextInt(inst.numAttributes());
+				indices[i] = indices_perm[i];
+		
 		} else {
 			int[] sorted_indices = bubblesort_index(abs_vector(this.weights));
 			
@@ -311,6 +313,35 @@ public class OFSP extends AbstractClassifier {
 				x[i] = -x[i];
 		}
 		return x;
+	}
+	
+	/**
+	 * Create a randomly permutation sequence of a pre-specified length.
+	 * @param length
+	 * @return
+	 */
+	public int[] perm(int length) {
+		
+	    // initialize array and fill it with {0,1,2...}
+	    int[] array = new int[length];
+	    for(int i = 0; i < array.length; i++)
+	        array[i] = i;
+
+	    for(int i = 0; i < length; i++){
+
+	        // randomly chosen position in array whose element
+	        // will be swapped with the element in position i
+	        // note that when i = 0, any position can chosen (0 thru length-1)
+	        // when i = 1, only positions 1 through length -1
+	                    // NOTE: r is an instance of java.util.Random
+	        int ran = i + this.rand.nextInt (length-i);
+
+	        // perform swap
+	        int temp = array[i];
+	        array[i] = array[ran];
+	        array[ran] = temp;
+	    }                       
+	    return array;
 	}
 
 }
