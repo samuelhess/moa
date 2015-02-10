@@ -140,7 +140,7 @@ public class OFSP extends AbstractClassifier {
 			
 			for (int i = 0; i < this.numSelectOption.getValue(); i++) 
 				indices[i] = sorted_indices[sorted_indices.length - i - 1];
-		}
+		} 
 		
 		f_t = 0;
 		for (int i = 0; i < this.numSelectOption.getValue(); i++)

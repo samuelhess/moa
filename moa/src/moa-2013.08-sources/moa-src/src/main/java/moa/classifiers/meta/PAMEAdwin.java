@@ -83,6 +83,7 @@ public class PAMEAdwin extends AbstractClassifier{
 	public double[] weights_pame3;
 	/*kl-divergence*/
 	public double dkl = 0.0;
+	public double l1d = 0.0;
 	/*number of rare instances processed*/
 	public double rareCount;
 	/*number of instances processed*/
@@ -377,6 +378,7 @@ public class PAMEAdwin extends AbstractClassifier{
 		/*kl-measurement will be symetric now*/
 		this.dkl = (this.klDivergence(this.weights_pame2, this.weights_pame3) 
 				+ this.klDivergence(this.weights_pame3, this.weights_pame2))/2.0;
+		this.l1d = this.l1diff(this.weights_pame2, this.weights_pame3);
 	}
 
 
@@ -581,6 +583,20 @@ public class PAMEAdwin extends AbstractClassifier{
 	     }
 		return klDiv / log2; // moved this division out of the loop -DM
 	}
+	
+	public double l1diff(double[] p1, double[] p2) {
+		double diff = 0.;
+		double d = 0;
+		
+		for (int i = 0; i < p1.length; ++i) {
+			d = p1[i] - p2[i];
+			if (d < 0)
+				diff -= d;
+			else
+				diff += d;
+		}
+		return diff;
+	}
 
 
 	@Override
@@ -588,7 +604,8 @@ public class PAMEAdwin extends AbstractClassifier{
 		return new Measurement[]{new Measurement("ensemble size",
                 this.ensemble != null ? this.ensemble.length : 0),
                 new Measurement("negative weights",this.n_negativeWeights),
-                new Measurement("KL-div",this.dkl)};
+                new Measurement("KL-div",this.dkl),
+                new Measurement("L1-Diff",this.dkl)};
 	}
 
 
