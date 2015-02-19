@@ -36,57 +36,73 @@ import java.util.Random;
 public class OFSP extends AbstractClassifier {
 
     /**
-     * serial id
+     * Serial ID
      */
     private static final long serialVersionUID = 1L;
+    
     /**
-     * truncation size or the number of features to select
+     * Truncation size or the number of features to select. This is set up in 
+     * the GUI menu
      */
     public IntOption numSelectOption = new IntOption("numSelect",
             'n', "The number of features to select.",
             10, 0, Integer.MAX_VALUE);
+    
     /**
-     * step size
+     * Step size
      */
     public FloatOption stepSizeOption = new FloatOption("stepSize",
             's', "The step size.",
             0.2, 0.00, Integer.MAX_VALUE);
+    
     /**
-     * exploration parameter
+     * Exploration parameter
      */
     public FloatOption searchOption = new FloatOption("search",
             'e', "Exploration parameter.",
             0.2, 0.00, Integer.MAX_VALUE);
+    
     /**
-     *      */
+     * Sets the L2-norm bound
+     */
     public FloatOption boundOption = new FloatOption("bound",
             'b', "Bound on the l2-norm.",
             10, 0.00, Integer.MAX_VALUE);
+    
     /**
-     *      
+     * Select the evaluation option: Full or Partial
      */
     public MultiChoiceOption evalOption = new MultiChoiceOption("evaluation",
             'p', "Evaluate on a full or partial information instance.",
             new String[]{"full", "partial"}, new String[]{"full", "partial"}, 0);
+    
     /**
-     * parameter vector for prediction
+     * Parameter vector for prediction
      */
     protected double[] weights;
+    
     /**
-     * bias parameters
+     * Bias parameters
      */
     protected double bias;
+    
     /**
      * Class for generating random numbers
      */
     protected Random rand;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRandomizable() {
         //Not randomizable
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getVotesForInstance(Instance inst) {
         if (this.weights == null) {
@@ -95,7 +111,7 @@ public class OFSP extends AbstractClassifier {
 
         double[] result = (inst.classAttribute().isNominal()) ? new double[2] : new double[1];
         double f_t = 0;
-        int[] indices = new int[this.numSelectOption.getValue()];
+        int[] indices = new int[this.numSelectOption.getValue()]; //Sets indices to all 0's
 
         if (this.evalOption.getChosenIndex() == 0) {
             f_t = dot(inst.toDoubleArray(), this.weights);
@@ -140,7 +156,7 @@ public class OFSP extends AbstractClassifier {
                 this.weights[i] = this.rand.nextGaussian();
             }
             this.bias = 0.0;
-            this.weights = truncate(this.weights, this.numSelectOption.getValue());
+            this.weights = truncate(this.weights, this.numSelectOption.getValue()); //No changes to weights
         }
 
         if (inst.classAttribute().isNominal()) {
@@ -201,20 +217,25 @@ public class OFSP extends AbstractClassifier {
 
     }
 
+    /**
+     * Empty method - not supported.
+     * 
+     * @return null
+     */
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * Empty method - not supported.
+     */
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
-		// TODO Auto-generated method stub
-
     }
 
     /**
-     * Compute the dot product of two vectors
+     * Compute the dot product of two vectors.
      *
      * @param x input vector
      * @param y input vector
@@ -244,11 +265,12 @@ public class OFSP extends AbstractClassifier {
     }
 
     /**
-     * Add two double vectors
+     * Add two double vectors. This method assumes that the vectors are of the
+     * same size.
      *
-     * @param x
-     * @param y
-     * @return
+     * @param x Vector x
+     * @param y Vector y
+     * @return The sum of two vectors
      */
     public double[] vector_add(double[] x, double[] y) {
         for (int i = 0; i < x.length; i++) {
@@ -258,7 +280,8 @@ public class OFSP extends AbstractClassifier {
     }
 
     /**
-     *
+     * 
+     * 
      * @param x
      * @param bias
      * @param R
