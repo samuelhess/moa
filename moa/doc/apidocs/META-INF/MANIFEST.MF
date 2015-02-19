@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 Manifest-Version: 1.0
 Archiver-Version: Plexus Archiver
 Created-By: Apache Maven
 Built-By: fracpete
 Build-Jdk: 1.6.0_25
 
+=======
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: fracpete
+Build-Jdk: 1.6.0_25
+
+>>>>>>> 93d8b6469d28597a1fc6ba0371d33fd7d02b1856
