@@ -198,7 +198,7 @@ public class OFSP extends AbstractClassifier {
                 if (this.weights[i] != 0) {
                     denom += (1 - this.searchOption.getValue()) * this.weights[i];
                 }
-                x_hat[i] /= denom;
+                x_hat[i] /= denom; //Possible error here
             }
 
             m_weights = scalar_vector(y_t * this.stepSizeOption.getValue(), x_hat);
@@ -312,7 +312,9 @@ public class OFSP extends AbstractClassifier {
     }
 
     /**
-     * Keep only the B largest entries in a vector x
+     * Keep only the B largest entries in a vector x 
+     * 
+     * @TODO: FIX THIS: appears to set highest values to 0.
      *
      * @param x
      * @param B
@@ -320,39 +322,48 @@ public class OFSP extends AbstractClassifier {
      */
     public double[] truncate(double[] x, int B) {
         int[] sorted_indices = bubblesort_index(abs_vector(x));
-        for (int i = 0; i < x.length - B - 1; i++) {
+        for (int i = 0; i < x.length - B; i++) {
             x[sorted_indices[i]] = 0.0;
         }
         return x;
     }
 
     /**
-     * Sort the elements of a vector
+     * Sort the elements of a vector, and returns the indices that were sorted.
+     * The sorted indices return the location of the smallest to largest weight 
+     * values in the x array.
+     * 
+     * Note: x should not be sorted when this method is complete. 
      *
      * @param x vector to be sorted
-     * @return sorted vector
+     * @return vector of sorted indices
      */
     public int[] bubblesort_index(double[] x) {
         int[] y = new int[x.length];
+        double[] temp = new double[x.length];
+        
+        //Create a copy of the x array so as to not change its values.
+        System.arraycopy(x, 0, temp, 0, x.length);
+        
         boolean flag = true;
         double t, r;
 
-        /*initialize the indices*/
-        for (int i = 0; i < x.length; i++) {
+        // Initialize the indices array
+        for (int i = 0; i < temp.length; i++) {
             y[i] = i;
         }
 
         while (flag) {
             flag = false;
-            for (int j = 0; j < x.length - 1; j++) {
-                if (x[j] < x[j + 1]) {
-                    t = x[j];
+            for (int j = 0; j < temp.length - 1; j++) {
+                if (temp[j] > temp[j + 1]) {
+                    t = temp[j];
                     r = y[j];
 
-                    x[j] = x[j + 1];
+                    temp[j] = temp[j + 1];
                     y[j] = y[j + 1];
 
-                    x[j + 1] = t;
+                    temp[j + 1] = t;
                     y[j + 1] = (int) r;
                     flag = true;
                 }
@@ -392,7 +403,7 @@ public class OFSP extends AbstractClassifier {
 
         for (int i = 0; i < length; i++) {
 
-	        // randomly chosen position in array whose element
+	    // randomly chosen position in array whose element
             // will be swapped with the element in position i
             // note that when i = 0, any position can chosen (0 thru length-1)
             // when i = 1, only positions 1 through length -1
