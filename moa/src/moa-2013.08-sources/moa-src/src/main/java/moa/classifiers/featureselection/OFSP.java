@@ -36,57 +36,73 @@ import java.util.Random;
 public class OFSP extends AbstractClassifier {
 
     /**
-     * serial id
+     * Serial ID
      */
     private static final long serialVersionUID = 1L;
+    
     /**
-     * truncation size or the number of features to select
+     * Truncation size or the number of features to select. This is set up in 
+     * the GUI menu
      */
     public IntOption numSelectOption = new IntOption("numSelect",
             'n', "The number of features to select.",
             10, 0, Integer.MAX_VALUE);
+    
     /**
-     * step size
+     * Step size
      */
     public FloatOption stepSizeOption = new FloatOption("stepSize",
             's', "The step size.",
             0.2, 0.00, Integer.MAX_VALUE);
+    
     /**
-     * exploration parameter
+     * Exploration parameter
      */
     public FloatOption searchOption = new FloatOption("search",
             'e', "Exploration parameter.",
             0.2, 0.00, Integer.MAX_VALUE);
+    
     /**
-     *      */
+     * Sets the L2-norm bound
+     */
     public FloatOption boundOption = new FloatOption("bound",
             'b', "Bound on the l2-norm.",
             10, 0.00, Integer.MAX_VALUE);
+    
     /**
-     *      
+     * Select the evaluation option: Full or Partial
      */
     public MultiChoiceOption evalOption = new MultiChoiceOption("evaluation",
             'p', "Evaluate on a full or partial information instance.",
             new String[]{"full", "partial"}, new String[]{"full", "partial"}, 0);
+    
     /**
-     * parameter vector for prediction
+     * Parameter vector for prediction
      */
     protected double[] weights;
+    
     /**
-     * bias parameters
+     * Bias parameters
      */
     protected double bias;
+    
     /**
      * Class for generating random numbers
      */
     protected Random rand;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRandomizable() {
         //Not randomizable
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getVotesForInstance(Instance inst) {
         if (this.weights == null) {
@@ -95,7 +111,7 @@ public class OFSP extends AbstractClassifier {
 
         double[] result = (inst.classAttribute().isNominal()) ? new double[2] : new double[1];
         double f_t = 0;
-        int[] indices = new int[this.numSelectOption.getValue()];
+        int[] indices = new int[this.numSelectOption.getValue()]; //Sets indices to all 0's
 
         if (this.evalOption.getChosenIndex() == 0) {
             f_t = dot(inst.toDoubleArray(), this.weights);
@@ -120,6 +136,10 @@ public class OFSP extends AbstractClassifier {
         return result;
     }
 
+    /**
+     * Resets the classifier. It is similar from starting the classifier from 
+     * scratch.
+     */
     @Override
     public void resetLearningImpl() {
         this.weights = null;     // we'll reset when we start learning
@@ -127,6 +147,11 @@ public class OFSP extends AbstractClassifier {
         this.rand = new Random();
     }
 
+    /**
+     * Trains this classifier incrementally using the given instance.
+     * 
+     * @param inst The instance to be used for training
+     */
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         double y_t, f_t, denom, m_bias;
@@ -140,7 +165,7 @@ public class OFSP extends AbstractClassifier {
                 this.weights[i] = this.rand.nextGaussian();
             }
             this.bias = 0.0;
-            this.weights = truncate(this.weights, this.numSelectOption.getValue());
+            truncate(this.weights, this.numSelectOption.getValue());
         }
 
         if (inst.classAttribute().isNominal()) {
@@ -158,7 +183,7 @@ public class OFSP extends AbstractClassifier {
             }
 
         } else {
-            int[] sorted_indices = bubblesort_index(abs_vector(this.weights));
+            int[] sorted_indices = bubblesort_index(abs_vector(this.weights.clone()));
 
             for (int i = 0; i < inst.numAttributes() - this.numSelectOption.getValue(); i++) {
                 x_hat[sorted_indices[i]] = 0.0;
@@ -182,7 +207,12 @@ public class OFSP extends AbstractClassifier {
                 if (this.weights[i] != 0) {
                     denom += (1 - this.searchOption.getValue()) * this.weights[i];
                 }
-                x_hat[i] /= denom;
+                if(denom == 0){
+                    x_hat[i] = 0;
+                }
+                else{
+                    x_hat[i] /= denom;
+                }
             }
 
             m_weights = scalar_vector(y_t * this.stepSizeOption.getValue(), x_hat);
@@ -191,7 +221,7 @@ public class OFSP extends AbstractClassifier {
             m_bias += m_bias + this.bias;
 
             m_weights = l2_projection(m_weights, m_bias, this.boundOption.getValue());
-            m_weights = truncate(m_weights, this.numSelectOption.getValue());
+            truncate(m_weights, this.numSelectOption.getValue());
 
             for (int i = 0; i < m_weights.length - 1; i++) {
                 this.weights[i] = m_weights[i];
@@ -201,20 +231,25 @@ public class OFSP extends AbstractClassifier {
 
     }
 
+    /**
+     * Empty method - not supported.
+     * 
+     * @return null
+     */
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * Empty method - not supported.
+     */
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
-		// TODO Auto-generated method stub
-
     }
 
     /**
-     * Compute the dot product of two vectors
+     * Compute the dot product of two vectors.
      *
      * @param x input vector
      * @param y input vector
@@ -244,11 +279,12 @@ public class OFSP extends AbstractClassifier {
     }
 
     /**
-     * Add two double vectors
+     * Add two double vectors. This method assumes that the vectors are of the
+     * same size.
      *
-     * @param x
-     * @param y
-     * @return
+     * @param x Vector x
+     * @param y Vector y
+     * @return The sum of two vectors
      */
     public double[] vector_add(double[] x, double[] y) {
         for (int i = 0; i < x.length; i++) {
@@ -258,7 +294,8 @@ public class OFSP extends AbstractClassifier {
     }
 
     /**
-     *
+     * 
+     * 
      * @param x
      * @param bias
      * @param R
@@ -289,47 +326,56 @@ public class OFSP extends AbstractClassifier {
     }
 
     /**
-     * Keep only the B largest entries in a vector x
+     * Keep only the B entries of larger magnitudes in the given vector. The 
+     * vector is manipulated via pass-by-reference, so it does not need to be 
+     * returned.
      *
-     * @param x
-     * @param B
-     * @return
+     * @param x Vector containing weights
+     * @param B Number of larger magnitude weights to keep.
      */
-    public double[] truncate(double[] x, int B) {
-        int[] sorted_indices = bubblesort_index(abs_vector(x));
-        for (int i = 0; i < x.length - B - 1; i++) {
+    public void truncate(double[] x, int B) {
+        int[] sorted_indices = bubblesort_index(abs_vector(x.clone()));
+        for (int i = 0; i < x.length - B; i++) {
             x[sorted_indices[i]] = 0.0;
         }
-        return x;
     }
 
     /**
-     * Sort the elements of a vector
+     * Sort the elements of a vector, and returns the indices that were sorted.
+     * The sorted indices return the location of the smallest to largest weight 
+     * values in the x array.
+     * 
+     * Note: x should not be sorted when this method is complete. 
      *
      * @param x vector to be sorted
-     * @return sorted vector
+     * @return vector of sorted indices
      */
     public int[] bubblesort_index(double[] x) {
         int[] y = new int[x.length];
+        double[] temp = new double[x.length];
+        
+        //Create a copy of the x array so as to not change its values.
+        System.arraycopy(x, 0, temp, 0, x.length);
+        
         boolean flag = true;
         double t, r;
 
-        /*initialize the indices*/
-        for (int i = 0; i < x.length; i++) {
+        // Initialize the indices array
+        for (int i = 0; i < temp.length; i++) {
             y[i] = i;
         }
 
         while (flag) {
             flag = false;
-            for (int j = 0; j < x.length - 1; j++) {
-                if (x[j] < x[j + 1]) {
-                    t = x[j];
+            for (int j = 0; j < temp.length - 1; j++) {
+                if (temp[j] > temp[j + 1]) {
+                    t = temp[j];
                     r = y[j];
 
-                    x[j] = x[j + 1];
+                    temp[j] = temp[j + 1];
                     y[j] = y[j + 1];
 
-                    x[j + 1] = t;
+                    temp[j + 1] = t;
                     y[j + 1] = (int) r;
                     flag = true;
                 }
@@ -369,7 +415,7 @@ public class OFSP extends AbstractClassifier {
 
         for (int i = 0; i < length; i++) {
 
-	        // randomly chosen position in array whose element
+	    // randomly chosen position in array whose element
             // will be swapped with the element in position i
             // note that when i = 0, any position can chosen (0 thru length-1)
             // when i = 1, only positions 1 through length -1

@@ -350,13 +350,8 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     /**
      * Returns a string representation of the model.
      *
-<<<<<<< HEAD
      * @param out	the stringbuilder to add the description
      * @param indent	the number of characters to indent
-=======
-     * @param out The stringbuilder to add the description
-     * @param indent The number of characters to indent
->>>>>>> 93d8b6469d28597a1fc6ba0371d33fd7d02b1856
      */
     public abstract void getModelDescription(StringBuilder out, int indent);
 
