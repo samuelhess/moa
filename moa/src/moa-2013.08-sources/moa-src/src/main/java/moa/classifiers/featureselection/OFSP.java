@@ -156,7 +156,7 @@ public class OFSP extends AbstractClassifier {
                 this.weights[i] = this.rand.nextGaussian();
             }
             this.bias = 0.0;
-            this.weights = truncate(this.weights, this.numSelectOption.getValue()); //No changes to weights
+            truncate(this.weights, this.numSelectOption.getValue());
         }
 
         if (inst.classAttribute().isNominal()) {
@@ -207,7 +207,7 @@ public class OFSP extends AbstractClassifier {
             m_bias += m_bias + this.bias;
 
             m_weights = l2_projection(m_weights, m_bias, this.boundOption.getValue());
-            m_weights = truncate(m_weights, this.numSelectOption.getValue());
+            truncate(m_weights, this.numSelectOption.getValue());
 
             for (int i = 0; i < m_weights.length - 1; i++) {
                 this.weights[i] = m_weights[i];
@@ -312,20 +312,18 @@ public class OFSP extends AbstractClassifier {
     }
 
     /**
-     * Keep only the B largest entries in a vector x 
-     * 
-     * @TODO: FIX THIS: appears to set highest values to 0.
+     * Keep only the B entries of larger magnitudes in the given vector. The 
+     * vector is manipulated via pass-by-reference, so it does not need to be 
+     * returned.
      *
-     * @param x
-     * @param B
-     * @return
+     * @param x Vector containing weights
+     * @param B Number of larger magnitude weights to keep.
      */
-    public double[] truncate(double[] x, int B) {
-        int[] sorted_indices = bubblesort_index(abs_vector(x));
+    public void truncate(double[] x, int B) {
+        int[] sorted_indices = bubblesort_index(abs_vector(x.clone()));
         for (int i = 0; i < x.length - B; i++) {
             x[sorted_indices[i]] = 0.0;
         }
-        return x;
     }
 
     /**
