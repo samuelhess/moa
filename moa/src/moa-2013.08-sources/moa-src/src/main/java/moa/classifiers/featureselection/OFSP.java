@@ -205,12 +205,9 @@ public class OFSP extends AbstractClassifier {
             for (int i = 0; i < x_hat.length; i++) {
                 denom = this.numSelectOption.getValue() / x_hat.length * this.searchOption.getValue();
                 if (this.weights[i] != 0) {
-                    denom += (1 - this.searchOption.getValue()) * this.weights[i];
+                    denom += (1 - this.searchOption.getValue());
                 }
-                if(denom == 0){
-                    x_hat[i] = 0;
-                }
-                else{
+                if(denom != 0){
                     x_hat[i] /= denom;
                 }
             }
