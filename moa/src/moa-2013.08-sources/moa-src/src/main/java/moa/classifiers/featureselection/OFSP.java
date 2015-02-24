@@ -136,6 +136,10 @@ public class OFSP extends AbstractClassifier {
         return result;
     }
 
+    /**
+     * Resets the classifier. It is similar from starting the classifier from 
+     * scratch.
+     */
     @Override
     public void resetLearningImpl() {
         this.weights = null;     // we'll reset when we start learning
@@ -143,6 +147,11 @@ public class OFSP extends AbstractClassifier {
         this.rand = new Random();
     }
 
+    /**
+     * Trains this classifier incrementally using the given instance.
+     * 
+     * @param inst The instance to be used for training
+     */
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         double y_t, f_t, denom, m_bias;
@@ -174,7 +183,7 @@ public class OFSP extends AbstractClassifier {
             }
 
         } else {
-            int[] sorted_indices = bubblesort_index(abs_vector(this.weights));
+            int[] sorted_indices = bubblesort_index(abs_vector(this.weights.clone()));
 
             for (int i = 0; i < inst.numAttributes() - this.numSelectOption.getValue(); i++) {
                 x_hat[sorted_indices[i]] = 0.0;
@@ -198,7 +207,12 @@ public class OFSP extends AbstractClassifier {
                 if (this.weights[i] != 0) {
                     denom += (1 - this.searchOption.getValue()) * this.weights[i];
                 }
-                x_hat[i] /= denom; //Possible error here
+                if(denom == 0){
+                    x_hat[i] = 0;
+                }
+                else{
+                    x_hat[i] /= denom;
+                }
             }
 
             m_weights = scalar_vector(y_t * this.stepSizeOption.getValue(), x_hat);
