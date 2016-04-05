@@ -3,8 +3,15 @@
 ## remove any old files that may exist in the path
 #rm outputs/*.csv
 
+
+JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home
+PATH=$JAVA_HOME/bin:$PATH
+
+
 ## set up some path locations
-home_fp=/data/gditzler
+# home_fp=/data/gditzler
+home_fp=/Users/gditzler
+
 data_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/data
 moa_fp=${home_fp}/Git/MassiveOnlineAnalysis/runtime
 lib_fp=${home_fp}/Git/MassiveOnlineAnalysis/moa/lib
