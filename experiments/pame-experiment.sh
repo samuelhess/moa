@@ -4,13 +4,14 @@
 #rm outputs/*.csv
 
 
-JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home
-PATH=$JAVA_HOME/bin:$PATH
+#JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home
+#PATH=$JAVA_HOME/bin:$PATH
 
 
 ## set up some path locations
 # home_fp=/data/gditzler
-home_fp=/Users/gditzler
+# home_fp=/Users/gditzler
+home_fp=/scratch/ditzler
 
 data_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/data
 moa_fp=${home_fp}/Git/MassiveOnlineAnalysis/runtime
