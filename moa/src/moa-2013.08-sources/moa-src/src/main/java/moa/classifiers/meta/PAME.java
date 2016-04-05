@@ -366,10 +366,14 @@ public class PAME extends AbstractClassifier {
 	 * multiply a vector by a scalar
 	 */
 	public double[] scalarvector(double a, double[] x){
+		double[] y = new double[x.length];
+		for (int j = 0; j < x.length; j++)
+			y[j] = 0.0;
+		
 		for (int i = 0; i < x.length; i++){
-			x[i] = a*x[i];
+			y[i] = a*x[i];
 		}
-		return x;
+		return y;
 	}
 
 
@@ -389,19 +393,27 @@ public class PAME extends AbstractClassifier {
 
 	private double[] bubblesort(double[] x){
 		boolean flag = true;
+		
 		double t;
+		
+		double[] y = new double[x.length];
+		for (int j = 0; j < x.length; j++)
+			y[j] = x[j];
+		
+		
+		
 		while(flag){
 			flag = false;
-			for (int j = 0; j < x.length - 1; j++){
-				if (x[j] < x[j + 1]){
-					t = x[j];
-					x[j] = x[j + 1];
-					x[j + 1] = t;
+			for (int j = 0; j < y.length - 1; j++){
+				if (y[j] < y[j + 1]){
+					t = y[j];
+					y[j] = y[j + 1];
+					y[j + 1] = t;
 					flag = true;
 				}
 			}
 		}	
-		return x;
+		return y;
 	}
 
 

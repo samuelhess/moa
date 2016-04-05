@@ -145,7 +145,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
 
     @Override
     public Measurement[] getModelMeasurements() {
-        List<Measurement> measurementList = new LinkedList<>();
+        List<Measurement> measurementList = new LinkedList<Measurement>();
         measurementList.add(new Measurement("model training instances",
                 trainingWeightSeenByModel()));
         measurementList.add(new Measurement("model serialized size (bytes)",
