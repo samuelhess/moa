@@ -215,8 +215,7 @@ public class PAME extends AbstractClassifier {
 		if (this.C < alpha)
 			alpha = this.C;  // apply regularization
 
-		double[] update = this.scalarvector(alpha*yt, this.addvectors(ht, 
-				this.scalarvector(-1.0*hh/K, onesVec)));
+		double[] update = this.scalarvector(alpha*yt, this.addvectors(ht, this.scalarvector(-1.0*hh/K, onesVec)));
 		this.weights = this.addvectors(this.weights, update);
 
 		/*
