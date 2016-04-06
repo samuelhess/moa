@@ -19,11 +19,11 @@ lib_fp=${home_fp}/Git/MassiveOnlineAnalysis/moa/lib
 out_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/outputs
 
 ## get the datasets & defaults
-datasets=$(ls ${data_fp}/*.arff)
-#base_clfr=$(echo "bayes.NaiveBayes")
-#base_short=bayes
-base_clfr=$(echo "trees.HoeffdingTree -b")
-base_short=hoeff
+#datasets=$(ls ${data_fp}/*.arff)
+base_clfr=$(echo "bayes.NaiveBayes")
+base_short=bayes
+#base_clfr=$(echo "trees.HoeffdingTree -b")
+#base_short=hoeff
 
 for dataset in ${datasets[@]}; do 
   data_short=$(echo $dataset | sed -e "s/.*\/\(.*\)\.arff/\1/g")
