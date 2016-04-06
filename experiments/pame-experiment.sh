@@ -10,8 +10,8 @@
 
 ## set up some path locations
 # home_fp=/data/gditzler
-# home_fp=/Users/gditzler
-home_fp=/scratch/ditzler
+home_fp=/Users/gditzler
+# home_fp=/scratch/ditzler
 
 data_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/data
 moa_fp=${home_fp}/Git/MassiveOnlineAnalysis/runtime
@@ -19,7 +19,7 @@ lib_fp=${home_fp}/Git/MassiveOnlineAnalysis/moa/lib
 out_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/outputs
 
 ## get the datasets & defaults
-#datasets=$(ls ${data_fp}/*.arff)
+datasets=$(ls ${data_fp}/*.arff)
 base_clfr=$(echo "bayes.NaiveBayes")
 base_short=bayes
 #base_clfr=$(echo "trees.HoeffdingTree -b")
@@ -29,7 +29,7 @@ for dataset in ${datasets[@]}; do
   data_short=$(echo $dataset | sed -e "s/.*\/\(.*\)\.arff/\1/g")
 
   f=$(wc ${dataset} | awk '{print $1/100}' | sed -e "s/^\([0-9]*\).[0-9]*/\1/g")
-
+  
   # base 
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
