@@ -616,7 +616,7 @@ public class PAMEAdwin extends AbstractClassifier{
                 this.ensemble != null ? this.ensemble.length : 0),
                 new Measurement("negative weights",this.n_negativeWeights),
                 new Measurement("KL-div",this.dkl),
-                new Measurement("L1-Diff",this.dkl)};
+                new Measurement("L1-Diff",this.l1d)};
 	}
 
 

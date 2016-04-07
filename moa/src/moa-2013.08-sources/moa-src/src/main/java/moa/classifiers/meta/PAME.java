@@ -57,6 +57,11 @@ public class PAME extends AbstractClassifier {
                 "Update +/- Weight",
                 "Update + Weight clipping",
                 "Formal Optimization"}, 0);
+	
+	public MultiChoiceOption learningMethodOption = new MultiChoiceOption(
+            "learningMethod", 'a', "The learning algorithm used.", 
+            new String[]{"Bagging", "Boosting"}, new String[]{"Online Bagging", "Online Boosting"}, 0);
+	
 	/*option to oversample the stream*/
 	public FlagOption overSampleOption = new FlagOption("overSample",
             'o', "Oversample class 0.");
@@ -69,6 +74,8 @@ public class PAME extends AbstractClassifier {
 	
 	/*classifier voting weights for each ensemble member*/
 	public double[] weights;
+	public double[] scms;
+	public double[] swms;
 	/*number of nonnegative classifier weights*/
 	public double n_negativeWeights;
 	/*cares... id*/
@@ -173,6 +180,9 @@ public class PAME extends AbstractClassifier {
         		this.weights[i] = 0.001;
         	}
         }
+        this.scms = new double[this.ensemble.length];
+        this.swms = new double[this.ensemble.length];
+
 	}
 	
 	private void pame1_weights(double[] ht, double yt){
@@ -259,6 +269,8 @@ public class PAME extends AbstractClassifier {
 		// get the prediction vector back
 		double[] ht = this.getPredictions(inst);
 		double yt = inst.classValue();
+		double lambda_d = 1.0;
+		
 		if (inst.classIndex() == 0){
 			this.rareCount += 1.0;
 		}
@@ -304,16 +316,35 @@ public class PAME extends AbstractClassifier {
 			
             int k = MiscUtils.poisson(w, this.classifierRandom);
             
-            // update the expert accordingly 
-            if (k > 0) {
-            	// this works by updating the expert k-times with the same example.
-            	// thus is k = 4. the expert is trained updated on the same example
-            	// 4 times in a row. pretty easy.
-                Instance weightedInst = (Instance) inst.copy();
-                weightedInst.setWeight(inst.weight() * k);       // set the # of training times
-                this.ensemble[i].trainOnInstance(weightedInst);  // update expert
-            }
-        }
+            
+            if (this.learningMethodOption.getChosenIndex() == 0) {
+            	// update the expert accordingly 
+            	if (k > 0) {
+            		// this works by updating the expert k-times with the same example.
+            		// thus is k = 4. the expert is trained updated on the same example
+            		// 4 times in a row. pretty easy.
+                	Instance weightedInst = (Instance) inst.copy();
+                	weightedInst.setWeight(inst.weight() * k);       // set the # of training times
+                	this.ensemble[i].trainOnInstance(weightedInst);  // update expert
+            	}
+            } else { 
+            	
+            
+                k = MiscUtils.poisson(lambda_d, this.classifierRandom);
+                if (k > 0.0) {
+                    Instance weightedInst = (Instance) inst.copy();
+                    weightedInst.setWeight(inst.weight() * k);
+                    this.ensemble[i].trainOnInstance(weightedInst);
+                }
+                if (this.ensemble[i].correctlyClassifies(inst)) {
+                    this.scms[i] += lambda_d;
+                    lambda_d *= this.trainingWeightSeenByModel / (2 * this.scms[i]);
+                } else {
+                    this.swms[i] += lambda_d;
+                    lambda_d *= this.trainingWeightSeenByModel / (2 * this.swms[i]);
+                }
+            } // end boosting bagging check 
+        } // end ensemble member loop
 
 		this.n_negativeWeights = 0;
 		for (int i = 0; i < this.weights.length; i++){
