@@ -1,6 +1,7 @@
 *DS_Store
 .class
 .project
+.ipynb_checkpoints/
 results/
 moa/.classpath
 moa/.metadata/
