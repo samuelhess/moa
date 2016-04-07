@@ -75,32 +75,62 @@ for dataset in ${datasets[@]}; do
     -f $f" \
     > ${out_fp}/results-${data_short}-boostingAdwin-${base_short}.csv
 
-  # pame-1
+  # pame-1 bagging
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
     -l (meta.PAME -l ($base_clfr))\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame1-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame1-bag-${base_short}.csv
   
-  # pame-2
+  # pame-2 bagging
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
     -l (meta.PAME -l ($base_clfr) -u PAME-II)\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame2-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame2-bag-${base_short}.csv
   
-  # pame-3
+  # pame-3 - bagging
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
     -l (meta.PAME -l ($base_clfr) -u PAME-III)\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame3-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame3-bag-${base_short}.csv
+
+  
+  # pame-1 - boosting
+  java -cp ${moa_fp}/moac.jar \
+    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+    moa.DoTask "EvaluatePrequential \
+    -l (meta.PAME -l ($base_clfr))\
+    -s (ArffFileStream -f ${dataset}) \
+    -f $f" \
+    > ${out_fp}/results-${data_short}-pame1-boo-${base_short}.csv
+  
+  # pame-2 - boosting
+  java -cp ${moa_fp}/moac.jar \
+    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+    moa.DoTask "EvaluatePrequential \
+    -l (meta.PAME -l ($base_clfr) -u PAME-II)\
+    -s (ArffFileStream -f ${dataset}) \
+    -f $f" \
+    > ${out_fp}/results-${data_short}-pame2-boo-${base_short}.csv
+  
+  # pame-3 - boosting
+  java -cp ${moa_fp}/moac.jar \
+    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+    moa.DoTask "EvaluatePrequential \
+    -l (meta.PAME -l ($base_clfr) -u PAME-III)\
+    -s (ArffFileStream -f ${dataset}) \
+    -f $f" \
+    > ${out_fp}/results-${data_short}-pame3-boo-${base_short}.csv
+
+
 
   # pame-1
   java -cp ${moa_fp}/moac.jar \
