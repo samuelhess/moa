@@ -25,7 +25,7 @@ datasets=$(cat ${home_fp}/Git/ClassificationDatasets/two-class-datasets.txt | se
 #base_short=bayes
 base_clfr=$(echo "trees.HoeffdingTree -b")
 base_short=hoeff
-nclfr=50
+nclfr=100
 
 for dataset in ${datasets[@]}; do 
   data_short=$(echo $dataset | sed -e "s/.*\/\(.*\)\.arff/\1/g")
