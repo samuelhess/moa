@@ -16,14 +16,16 @@ home_fp=/scratch/ditzler
 data_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/data
 moa_fp=${home_fp}/Git/MassiveOnlineAnalysis/runtime
 lib_fp=${home_fp}/Git/MassiveOnlineAnalysis/moa/lib
-out_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/outputs
+out_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/outputs2
 
 ## get the datasets & defaults
-datasets=$(ls ${data_fp}/*.arff)
+#datasets=$(ls ${data_fp}/*.arff)
+datasets=$(cat ${home_fp}/Git/ClassificationDatasets/two-class-datasets.txt | sed -e 's/^/\/scratch\/ditzler\/Git\/ClassificationDatasets\/arffs\//g' -e 's/$/.arff/g')
 #base_clfr=$(echo "bayes.NaiveBayes")
 #base_short=bayes
 base_clfr=$(echo "trees.HoeffdingTree -b")
 base_short=hoeff
+nclfr=50
 
 for dataset in ${datasets[@]}; do 
   data_short=$(echo $dataset | sed -e "s/.*\/\(.*\)\.arff/\1/g")
@@ -37,127 +39,129 @@ for dataset in ${datasets[@]}; do
     -l (${base_clfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-${base_short}.csv
+    > ${out_fp}/results-${data_short}-${base_short}.csv & 
   
   # ozabag
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.OzaBag -l ($base_clfr))\
+    -l (meta.OzaBag -l ($base_clfr) -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-bagging-${base_short}.csv
+    > ${out_fp}/results-${data_short}-bagging-${base_short}.csv & 
 
   # ozaboost
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.OzaBoost -l ($base_clfr))\
+    -l (meta.OzaBoost -l ($base_clfr) -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-boosting-${base_short}.csv
+    > ${out_fp}/results-${data_short}-boosting-${base_short}.csv & 
 
   # ozabag (adwin)
-  java -cp ${moa_fp}/moac.jar \
-    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
-    moa.DoTask "EvaluatePrequential \
-    -l (meta.OzaBagAdwin -l ($base_clfr))\
-    -s (ArffFileStream -f ${dataset}) \
-    -f $f" \
-    > ${out_fp}/results-${data_short}-baggingAdwin-${base_short}.csv
+  #java -cp ${moa_fp}/moac.jar \
+  #  -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+  #  moa.DoTask "EvaluatePrequential \
+  #  -l (meta.OzaBagAdwin -l ($base_clfr) -s ${nclfr})\
+  #  -s (ArffFileStream -f ${dataset}) \
+  #  -f $f" \
+  #  > ${out_fp}/results-${data_short}-baggingAdwin-${base_short}.csv
 
   # ozaboost (adwin)
-  java -cp ${moa_fp}/moac.jar \
-    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
-    moa.DoTask "EvaluatePrequential \
-    -l (meta.OzaBoostAdwin -l ($base_clfr))\
-    -s (ArffFileStream -f ${dataset}) \
-    -f $f" \
-    > ${out_fp}/results-${data_short}-boostingAdwin-${base_short}.csv
+  #java -cp ${moa_fp}/moac.jar \
+  #  -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+  #  moa.DoTask "EvaluatePrequential \
+  #  -l (meta.OzaBoostAdwin -l ($base_clfr) -s ${nclfr})\
+  #  -s (ArffFileStream -f ${dataset}) \
+  #  -f $f" \
+  #  > ${out_fp}/results-${data_short}-boostingAdwin-${base_short}.csv
 
   # pame-1 bagging
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.PAME -a Bagging -C 2.0 -l ($base_clfr))\
+    -l (meta.PAME -a Bagging -C 2.0 -l ($base_clfr) -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame1-bag-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame1-bag-${base_short}.csv & 
   
   # pame-2 bagging
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.PAME -a Bagging -C 2.0 -l ($base_clfr) -u PAME-II)\
+    -l (meta.PAME -a Bagging -C 2.0 -l ($base_clfr) -u PAME-II -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame2-bag-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame2-bag-${base_short}.csv & 
   
   # pame-3 - bagging
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.PAME -a Bagging -C 2.0 -l ($base_clfr) -u PAME-III)\
+    -l (meta.PAME -a Bagging -C 2.0 -l ($base_clfr) -u PAME-III -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame3-bag-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame3-bag-${base_short}.csv & 
 
   
   # pame-1 - boosting
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.PAME -a Boosting -C 2.0 -l ($base_clfr))\
+    -l (meta.PAME -a Boosting -C 2.0 -l ($base_clfr) -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame1-boo-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame1-boo-${base_short}.csv & 
   
   # pame-2 - boosting
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.PAME -a Boosting -C 2.0 -l ($base_clfr) -u PAME-II)\
+    -l (meta.PAME -a Boosting -C 2.0 -l ($base_clfr) -u PAME-II -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame2-boo-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame2-boo-${base_short}.csv & 
   
   # pame-3 - boosting
   java -cp ${moa_fp}/moac.jar \
     -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
     moa.DoTask "EvaluatePrequential \
-    -l (meta.PAME -a Boosting -C 2.0 -l ($base_clfr) -u PAME-III)\
+    -l (meta.PAME -a Boosting -C 2.0 -l ($base_clfr) -u PAME-III -s ${nclfr})\
     -s (ArffFileStream -f ${dataset}) \
     -f $f" \
-    > ${out_fp}/results-${data_short}-pame3-boo-${base_short}.csv
+    > ${out_fp}/results-${data_short}-pame3-boo-${base_short}.csv & 
+
+  wait 
 
 
 
   # pame-1
-  java -cp ${moa_fp}/moac.jar \
-    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
-    moa.DoTask "EvaluatePrequential \
-    -l (meta.PAMEAdwin -l ($base_clfr))\
-    -s (ArffFileStream -f ${dataset}) \
-    -f $f" \
-    > ${out_fp}/results-${data_short}-pame1adwin-${base_short}.csv
+  #java -cp ${moa_fp}/moac.jar \
+  #  -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+  #  moa.DoTask "EvaluatePrequential \
+  #  -l (meta.PAMEAdwin -l ($base_clfr))\
+  #  -s (ArffFileStream -f ${dataset}) \
+  #  -f $f" \
+  #  > ${out_fp}/results-${data_short}-pame1adwin-${base_short}.csv
   
   # pame-2
-  java -cp ${moa_fp}/moac.jar \
-    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
-    moa.DoTask "EvaluatePrequential \
-    -l (meta.PAMEAdwin -l ($base_clfr) -u PAME-II)\
-    -s (ArffFileStream -f ${dataset}) \
-    -f $f" \
-    > ${out_fp}/results-${data_short}-pame2adwin-${base_short}.csv
+  #java -cp ${moa_fp}/moac.jar \
+  #  -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+  #  moa.DoTask "EvaluatePrequential \
+  #  -l (meta.PAMEAdwin -l ($base_clfr) -u PAME-II)\
+  #  -s (ArffFileStream -f ${dataset}) \
+  #  -f $f" \
+  #  > ${out_fp}/results-${data_short}-pame2adwin-${base_short}.csv
   
   # pame-3
-  java -cp ${moa_fp}/moac.jar \
-    -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
-    moa.DoTask "EvaluatePrequential \
-    -l (meta.PAMEAdwin -l ($base_clfr) -u PAME-III)\
-    -s (ArffFileStream -f ${dataset}) \
-    -f $f" \
-    > ${out_fp}/results-${data_short}-pame3adwin-${base_short}.csv
+  #java -cp ${moa_fp}/moac.jar \
+  #  -javaagent:${lib_fp}/sizeofag-1.0.0.jar \
+  #  moa.DoTask "EvaluatePrequential \
+  #  -l (meta.PAMEAdwin -l ($base_clfr) -u PAME-III)\
+  #  -s (ArffFileStream -f ${dataset}) \
+  #  -f $f" \
+  #  > ${out_fp}/results-${data_short}-pame3adwin-${base_short}.csv
 
 done
 
