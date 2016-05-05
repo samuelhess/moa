@@ -60,7 +60,7 @@ public class PAME extends AbstractClassifier {
                 "Formal Optimization"}, 0);
 	
 	public FloatOption alphaOption = new FloatOption("alphaOption", 'C',
-            "The number of expert in the ensemble.", 1, 0.000001, Float.MAX_VALUE);
+            "The number of expert in the ensemble.", 1, 0.001, Float.MAX_VALUE);
 	
 	public MultiChoiceOption learningMethodOption = new MultiChoiceOption(
             "learningMethod", 'a', "The learning algorithm used.", 
@@ -436,8 +436,6 @@ public class PAME extends AbstractClassifier {
 		double[] y = new double[x.length];
 		for (int j = 0; j < x.length; j++)
 			y[j] = x[j];
-		
-		
 		
 		while(flag){
 			flag = false;
