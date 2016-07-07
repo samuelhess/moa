@@ -23,9 +23,9 @@ out_fp=${home_fp}/Git/MassiveOnlineAnalysis/experiments/outputs2
 datasets=$(cat ${home_fp}/Git/ClassificationDatasets/two-class-datasets.txt | sed -e 's/^/\/scratch\/ditzler\/Git\/ClassificationDatasets\/arffs\//g' -e 's/$/.arff/g')
 #base_clfr=$(echo "bayes.NaiveBayes")
 #base_short=bayes
-#base_clfr=$(echo "trees.HoeffdingTree -b")
-base_clfr=$(echo "trees.DecisionStump")
-base_short=weak
+base_clfr=$(echo "trees.HoeffdingTree -b -g 25")
+#base_clfr=$(echo "trees.DecisionStump")
+base_short=hoeff2
 nclfr=100
 
 for dataset in ${datasets[@]}; do 
