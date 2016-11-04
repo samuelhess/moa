@@ -456,7 +456,8 @@ public class PAME extends AbstractClassifier {
 	protected Measurement[] getModelMeasurementsImpl() {
 		return new Measurement[]{new Measurement("ensemble size",
                 this.ensemble != null ? this.ensemble.length : 0),
-                new Measurement("negative weights",this.n_negativeWeights)};
+                new Measurement("negative weights",this.n_negativeWeights),
+                new Measurement("weight 1",this.weights[0])};
 	}
 
 
