@@ -17,7 +17,7 @@ home_fp=/scratch/shess/WorkingVersion/moa/trunk
 data_fp=${home_fp}/experiments/data
 moa_fp=${home_fp}/runtime
 lib_fp=${home_fp}/moa/lib
-out_fp=${home_fp}/experiments/outputs2
+out_fp=${home_fp}/experiments/outputsNew
 
 ## get the datasets & defaults
 datasets=$(ls ${data_fp}/s*.arff)
