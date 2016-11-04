@@ -11,7 +11,8 @@
 ## set up some path locations
 # home_fp=/data/gditzler
 # home_fp=/Users/gditzler
-home_fp=/home/uamlda-guest/Documents/shess/PAME/moa.git/trunk
+# home_fp=/home/uamlda-guest/Documents/shess/PAME/moa.git/trunk
+home_fp=/scratch/shess/WorkingVersion/moa/trunk
 
 data_fp=${home_fp}/experiments/data
 moa_fp=${home_fp}/runtime
